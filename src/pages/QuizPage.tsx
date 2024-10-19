@@ -8,7 +8,7 @@ import { PlayCircle, PauseCircle } from "lucide-react";
 export default function QuizPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { hotspotId, quizCount = 10, currentQuestion = 1, currentScore = 0, birds: initialBirds = [], correctBirds = [] } = location.state || {};
+  const { hotspotId, quizCount = 10, currentQuestion = 1, currentScore = 0, birds: initialBirds = [], correctBirds = [], incorrectBirds = [] } = location.state || {};
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export default function QuizPage() {
       const data = await response.json();
   
       if (!data.birds || data.birds.length === 0) {
-        navigate('/result', { state: { currentScore, quizCount: 0, correctBirds: [] } });
+        navigate('/result', { state: { currentScore, quizCount: 0, correctBirds: [], incorrectBirds: []} });
         return;
       }
   
@@ -33,7 +33,7 @@ export default function QuizPage() {
       setCurrentBird(selectedBirds[0]); // 最初の鳥を設定
     } catch (error) {
       console.error("鳥データの取得に失敗しました", error);
-      navigate('/result', { state: { currentScore, quizCount: 0, correctBirds: [] } });
+      navigate('/result', { state: { currentScore, quizCount: 0, correctBirds: [], incorrectBirds: [] } });
     }
   }, [hotspotId, navigate, currentScore, quizCount]);
   
@@ -73,7 +73,7 @@ export default function QuizPage() {
         if (!data.bird_detail) {
           console.error("bird_detailが見つかりません。結果ページへ遷移します。");
           if (isMounted) {
-            navigate('/result', { state: { currentScore, quizCount, correctBirds } });
+            navigate('/result', { state: { currentScore, quizCount, correctBirds, incorrectBirds } });
           }
           return;
         }
@@ -82,7 +82,7 @@ export default function QuizPage() {
         if (data.bird_detail.bird_id !== currentBird.bird_id) {
           console.error(`データの不一致: currentBird.bird_id (${currentBird.bird_id}) と data.bird_detail.bird_id (${data.bird_detail.bird_id}) が一致しません`);
           if (isMounted) {
-            navigate('/result', { state: { currentScore, quizCount, correctBirds } });
+            navigate('/result', { state: { currentScore, quizCount, incorrectBirds } });
           }
           return;
         }
@@ -91,7 +91,7 @@ export default function QuizPage() {
         if (!data.bird_detail.recording_url) {
           console.error("recording_urlが見つかりません。結果ページへ遷移します。");
           if (isMounted) {
-            navigate('/result', { state: { currentScore, quizCount, correctBirds } });
+            navigate('/result', { state: { currentScore, quizCount, correctBirds, incorrectBirds } });
           }
           return;
         }
@@ -114,7 +114,7 @@ export default function QuizPage() {
       } catch (error) {
         console.error("鳥の詳細情報の取得に失敗しました", error);
         if (isMounted) {
-          navigate('/result', { state: { currentScore, quizCount, correctBirds } });
+          navigate('/result', { state: { currentScore, quizCount, incorrectBirds } });
         }
       } finally {
         isLoading = false; // Reset loading flag after fetch is complete
@@ -166,8 +166,10 @@ export default function QuizPage() {
             currentQuestion: nextQuestion,  // 次の問題へ
             quizCount,  
             currentScore: currentScore + 1,  // スコアを加算
-            correctBirds: [...correctBirds, currentBird.comName],  
-            birds  
+            correctBirds: [...correctBirds, currentBird.comName], 
+            incorrectBirds,
+            birds,
+            birdDetail
           } 
         });
       } else {
@@ -185,12 +187,14 @@ export default function QuizPage() {
             quizCount,  
             currentScore,  // スコアはそのまま
             correctBirds,  
-            birds  
+            incorrectBirds: [...incorrectBirds, currentBird.comName],
+            birds,
+            birdDetail,
           } 
         });
       } else {
         // 最後の問題に達したら結果ページへ遷移
-        navigate('/result', { state: { currentScore, quizCount, correctBirds } });
+        navigate('/result', { state: { currentScore, quizCount, correctBirds, incorrectBirds } });
       }
     }
   };
@@ -239,7 +243,11 @@ export default function QuizPage() {
                   <Button
                     key={bird.bird_id}
                     variant={selectedAnswer === bird.comName ? "default" : "outline"}
-                    className="text-lg py-6"
+                    className={`text-lg py-6 ${
+                      selectedAnswer === bird.comName
+                        ? 'bg-green-500 text-white hover:bg-green-500 hover:text-white' // クリック後もホバーで変化しない
+                        : 'hover:bg-gray-200'  // 選択されていない場合のホバースタイル
+                    }`}
                     onClick={() => handleAnswerSelect(bird.comName)}
                   >
                     {bird.comName}
@@ -253,9 +261,8 @@ export default function QuizPage() {
             </>
           )}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="ghost" disabled={currentQuestion === 1}>Previous</Button>
-          <Button onClick={handleSubmit} disabled={!selectedAnswer}>Submit Answer</Button>
+        <CardFooter className="flex justify-end">
+          <Button onClick={handleSubmit} disabled={!selectedAnswer} variant="outline">Submit Answer</Button>
         </CardFooter>
       </Card>
     </div>
