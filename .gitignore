@@ -2,7 +2,7 @@
 node_modules/
 
 # Build output
-build/
+# build/
 dist/
 
 # Dependency directories
@@ -43,7 +43,7 @@ jspm_packages/
 # Ignore lockfiles (depending on the package manager you're using)
 # Uncomment one of the below based on your package manager:
 # npm
-package-lock.json
+# package-lock.json
 
 # Yarn
 # yarn.lock
