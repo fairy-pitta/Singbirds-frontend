@@ -10,10 +10,15 @@ export default function ResultPage() {
 
   const getLevel = (score: number, total: number) => {
     const percentage = (score / total) * 100
-    if (percentage >= 90) return "Bird Master"
-    if (percentage >= 70) return "Expert Birder"
-    if (percentage >= 50) return "Skilled Observer"
-    if (percentage >= 30) return "Budding Birder"
+    if (percentage >= 95) return "Bird Guru"
+    if (percentage >= 85) return "Bird Master"
+    if (percentage >= 75) return "Advanced Birder"
+    if (percentage >= 65) return "Expert Birder"
+    if (percentage >= 55) return "Skilled Observer"
+    if (percentage >= 45) return "Keen Birdwatcher"
+    if (percentage >= 35) return "Budding Birder"
+    if (percentage >= 25) return "Amateur Spotter"
+    if (percentage >= 15) return "Curious Novice"
     return "Novice Birdwatcher"
   }
 
@@ -71,9 +76,6 @@ export default function ResultPage() {
         <CardFooter className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4">
           <Button variant="outline" size="lg" className="w-full sm:w-auto" asChild>
             <Link to="/">Play Again</Link>
-          </Button>
-          <Button variant="outline" size="lg" className="w-full sm:w-auto">
-            Share Results
           </Button>
         </CardFooter>
       </Card>

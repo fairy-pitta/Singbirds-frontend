@@ -12,7 +12,8 @@ export default function HomePage() {
   const [habitat, setHabitat] = useState(""); // habitatの初期値は空に設定
   const [quizCount, setQuizCount] = useState(10);
   const [hotspots, setHotspots] = useState([]); // APIから取得するホットスポットのデータ
-  const [selectedHotspot, setSelectedHotspot] = useState(null); 
+  const [selectedHotspot, setSelectedHotspot] = useState(null);
+  const [maxSliderValue, setMaxSliderValue] = useState(10); // スライダーの初期最大値
   const navigate = useNavigate();
 
   // APIリクエストでホットスポットを取得
@@ -30,6 +31,33 @@ export default function HomePage() {
     fetchHotspots();
   }, []);
 
+  useEffect(() => {
+    const fetchBirds = async () => {
+      if (selectedHotspot) {
+        try {
+          const response = await fetch(`http://localhost:8000/api/hotspots/${selectedHotspot.hotspot_id}/birds/`);
+          const new_data = await response.json();
+  
+  
+          if (Array.isArray(new_data.birds)) {
+            const birdCount = new_data.birds.length;
+            setMaxSliderValue(birdCount > 0 ? birdCount : 10);
+            setQuizCount(Math.min(quizCount, birdCount)); // クイズ数を鳥の数以下に制限
+          } else {
+            console.error("無効な鳥データが取得されました");
+            setMaxSliderValue(10);
+          }
+        } catch (error) {
+          console.error("鳥データの取得に失敗しました", error);
+          setMaxSliderValue(10);
+        }
+      }
+    };
+  
+    fetchBirds();
+  }, [selectedHotspot]);
+
+  // クイズを開始するボタンの処理
   const handleStartQuiz = () => {
     if (selectedHotspot) {
       navigate("/quiz", {
@@ -85,15 +113,17 @@ export default function HomePage() {
               </Select>
             </div>
           </div>
+
+          {/* 質問数を選択するスライダー */}
           <div className="space-y-2">
             <Label htmlFor="quiz-count">Number of Questions: {quizCount}</Label>
             <Slider
               id="quiz-count"
-              min={5}
-              max={20}
+              min={1}
+              max={maxSliderValue}  // 鳥の数に基づく最大値
               step={1}
               value={[quizCount]}
-              onValueChange={(value) => setQuizCount(value[0])}
+              onValueChange={(value) => setQuizCount(value[0])}  // スライダーの値を更新
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -116,14 +146,13 @@ export default function HomePage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4">
-        <Button
-          onClick={handleStartQuiz}
-          size="lg"
-          className="w-full sm:w-auto bg-white text-black border-2 border-black py-3 px-6 rounded-lg shadow-md hover:bg-black hover:text-white transition-colors duration-300 ease-in-out"
-        >
-          Start Quiz
-        </Button>
-          <Button variant="outline" size="lg" className="w-full sm:w-auto">High Scores</Button>
+          <Button
+            onClick={handleStartQuiz}
+            size="lg"
+            className="w-full sm:w-auto bg-white text-black border-2 border-black py-3 px-6 rounded-lg shadow-md hover:bg-black hover:text-white transition-colors duration-300 ease-in-out"
+          >
+            Start Quiz
+          </Button>
         </CardFooter>
       </Card>
     </div>

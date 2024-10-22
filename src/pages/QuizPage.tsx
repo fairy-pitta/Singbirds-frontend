@@ -12,96 +12,66 @@ export default function QuizPage() {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [birds, setBirds] = useState(initialBirds); 
-  const [currentBird, setCurrentBird] = useState(birds[0]);  // 最初の鳥を設定
-  const [birdDetail, setBirdDetail] = useState(null); 
-  const [choices, setChoices] = useState([]);  
+  const [birds, setBirds] = useState(initialBirds);
+  const [currentBird, setCurrentBird] = useState<any>(null);
+  const [birdDetail, setBirdDetail] = useState<any>(null);
+  const [choices, setChoices] = useState([]);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 2;
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const fetchBirds = useCallback(async () => {
     try {
       const response = await fetch(`http://localhost:8000/api/hotspots/${hotspotId}/birds/`);
       const data = await response.json();
-  
+
       if (!data.birds || data.birds.length === 0) {
         navigate('/result', { state: { currentScore, quizCount: 0, correctBirds: [], incorrectBirds: []} });
         return;
       }
-  
-      const selectedBirds = data.birds.sort(() => 0.5 - Math.random()).slice(0, quizCount); // ランダムに鳥を選ぶ
+
+      const selectedBirds = data.birds.sort(() => 0.5 - Math.random()).slice(0, quizCount);
       setBirds(selectedBirds);
-      setCurrentBird(selectedBirds[0]); // 最初の鳥を設定
+      setCurrentBird(selectedBirds[0]);
     } catch (error) {
-      console.error("鳥データの取得に失敗しました", error);
+      console.error("Failed to fetch bird data", error);
       navigate('/result', { state: { currentScore, quizCount: 0, correctBirds: [], incorrectBirds: [] } });
     }
   }, [hotspotId, navigate, currentScore, quizCount]);
-  
+
   useEffect(() => {
     if (birds.length === 0) {
-      fetchBirds();  // 鳥リストを取得
+      fetchBirds();
+    } else if (currentQuestion <= birds.length) {
+      setCurrentBird(birds[currentQuestion - 1]);
     }
-  }, [fetchBirds]);
-
-  // `currentQuestion`が変わったら次の鳥に更新
-  useEffect(() => {
-    if (currentQuestion <= birds.length) {
-      setCurrentBird(birds[currentQuestion - 1]); // currentQuestionに基づいて次の鳥を設定
-    }
-  }, [currentQuestion, birds]);
+  }, [birds, currentQuestion, fetchBirds]);
 
   useEffect(() => {
-    console.log("Current Bird:", currentBird);
-  }, [currentBird]);
+    let isMounted = true;
 
-  useEffect(() => {
-    let isMounted = true; // A flag to track if the component is still mounted
-    let isLoading = false; // A flag to track if we are currently fetching data
-  
     const fetchBirdDetail = async () => {
-      // Prevent fetching if we are already loading or there's no valid bird ID
-      if (isLoading || !currentBird || !currentBird.bird_id) return;
-  
-      isLoading = true; // Mark as loading before fetch starts
-  
+      if (!currentBird || !currentBird.bird_id) return;
+
       try {
-        // Fetch bird details from API
         const response = await fetch(`http://localhost:8000/api/birds/${currentBird.bird_id}/random-detail/`);
         const data = await response.json();
-  
-        // Check if bird_detail exists
-        if (!data.bird_detail) {
-          console.error("bird_detailが見つかりません。結果ページへ遷移します。");
-          if (isMounted) {
-            navigate('/result', { state: { currentScore, quizCount, correctBirds, incorrectBirds } });
+
+        if (!data.bird_detail || !data.bird_detail.recording_url) {
+          console.error("bird_detail or recording_url not found.");
+          if (retryCount < maxRetries) {
+            setRetryCount(prev => prev + 1);
+          } else {
+            console.log("Max retries reached. Moving to next bird.");
+            navigateNextBird();
           }
           return;
         }
-  
-        // Check if bird_id matches currentBird's bird_id
-        if (data.bird_detail.bird_id !== currentBird.bird_id) {
-          console.error(`データの不一致: currentBird.bird_id (${currentBird.bird_id}) と data.bird_detail.bird_id (${data.bird_detail.bird_id}) が一致しません`);
-          if (isMounted) {
-            navigate('/result', { state: { currentScore, quizCount, incorrectBirds } });
-          }
-          return;
-        }
-  
-        // Check if recording_url exists
-        if (!data.bird_detail.recording_url) {
-          console.error("recording_urlが見つかりません。結果ページへ遷移します。");
-          if (isMounted) {
-            navigate('/result', { state: { currentScore, quizCount, correctBirds, incorrectBirds } });
-          }
-          return;
-        }
-  
-        // Correct spectrogram URL formatting
+
         const spectrogramUrl = data.bird_detail.spectrogram.startsWith('/')
           ? `http://localhost:8000${data.bird_detail.spectrogram}`
           : data.bird_detail.spectrogram;
-  
-        // If component is still mounted, update birdDetail
+
         if (isMounted) {
           setBirdDetail({
             ...data.bird_detail,
@@ -110,41 +80,41 @@ export default function QuizPage() {
             spectrogram: spectrogramUrl,
           });
         }
-  
       } catch (error) {
-        console.error("鳥の詳細情報の取得に失敗しました", error);
-        if (isMounted) {
-          navigate('/result', { state: { currentScore, quizCount, incorrectBirds } });
+        console.error("Failed to fetch bird detail", error);
+        if (retryCount < maxRetries) {
+          setRetryCount(prev => prev + 1);
+        } else {
+          console.log("Max retries reached. Moving to next bird.");
+          navigateNextBird();
         }
-      } finally {
-        isLoading = false; // Reset loading flag after fetch is complete
       }
     };
-  
-    if (currentBird?.bird_id) {
-      fetchBirdDetail(); // Fetch bird detail only if currentBird is valid and has a bird_id
-    }
-  
-    // Cleanup function to ensure that the effect doesn't run when the component is unmounted
-    return () => {
-      isMounted = false; // Mark component as unmounted
-    };
-  
-  }, [currentBird?.bird_id]); // Re-run effect only when currentBird's bird_id changes
-  
-  // 状態更新後のログ出力
-  useEffect(() => {
-    console.log("birdDetailが更新されました(kore):", birdDetail);
-  }, [birdDetail]);
-  
 
-  // 選択肢の生成
+    if (currentBird?.bird_id) {
+      fetchBirdDetail();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentBird, retryCount]);
+
+  const navigateNextBird = useCallback(() => {
+    const nextQuestion = currentQuestion + 1;
+    if (nextQuestion <= quizCount) {
+      setCurrentBird(birds[nextQuestion - 1]);
+    } else {
+      navigate('/result', { state: { currentScore, quizCount, correctBirds, incorrectBirds } });
+    }
+  }, [currentQuestion, quizCount, birds, navigate, currentScore, correctBirds, incorrectBirds]);
+
   useEffect(() => {
     if (birds.length > 0 && currentBird) {
-      const otherBirds = birds.filter(bird => bird.bird_id !== currentBird.bird_id);  // 正解以外の鳥
-      const randomChoices = otherBirds.sort(() => 0.5 - Math.random()).slice(0, 3);  // ランダムに3つ選ぶ
-      const allChoices = [...randomChoices, currentBird];  // 正解の鳥を含める
-      setChoices(allChoices.sort(() => 0.5 - Math.random()));  // 選択肢をシャッフル
+      const otherBirds = birds.filter(bird => bird.bird_id !== currentBird.bird_id);
+      const randomChoices = otherBirds.sort(() => 0.5 - Math.random()).slice(0, 3);
+      const allChoices = [...randomChoices, currentBird];
+      setChoices(allChoices.sort(() => 0.5 - Math.random()));
     }
   }, [currentBird, birds]);
 
@@ -153,19 +123,16 @@ export default function QuizPage() {
   };
 
   const handleSubmit = () => {
-    const nextQuestion = currentQuestion;  // 次の問題
-    console.log("currentBird:", currentBird);
-    console.log("birdDetail:", birdDetail);
+    const nextQuestion = currentQuestion;
 
     if (selectedAnswer === currentBird.comName) {
-      // 正解時、次の鳥を設定
       if (nextQuestion <= quizCount) {
         navigate('/right', { 
           state: { 
             birdName: currentBird.comName, 
-            currentQuestion: nextQuestion,  // 次の問題へ
+            currentQuestion: nextQuestion, 
             quizCount,  
-            currentScore: currentScore + 1,  // スコアを加算
+            currentScore: currentScore + 1,  
             correctBirds: [...correctBirds, currentBird.comName], 
             incorrectBirds,
             birds,
@@ -173,19 +140,17 @@ export default function QuizPage() {
           } 
         });
       } else {
-        // 最後の問題に達したら結果ページへ遷移
         navigate('/result', { state: { currentScore: currentScore + 1, quizCount, correctBirds: [...correctBirds, currentBird.comName] } });
       }
     } else {
-      // 不正解時
       if (nextQuestion <= quizCount) {
         navigate('/wrong', { 
           state: { 
             birdName: currentBird.comName, 
             userAnswer: selectedAnswer, 
-            currentQuestion: nextQuestion,  // 次の問題へ
+            currentQuestion: nextQuestion,  
             quizCount,  
-            currentScore,  // スコアはそのまま
+            currentScore,  
             correctBirds,  
             incorrectBirds: [...incorrectBirds, currentBird.comName],
             birds,
@@ -193,11 +158,14 @@ export default function QuizPage() {
           } 
         });
       } else {
-        // 最後の問題に達したら結果ページへ遷移
         navigate('/result', { state: { currentScore, quizCount, correctBirds, incorrectBirds } });
       }
     }
   };
+
+  if (!currentBird || !birdDetail) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -206,63 +174,59 @@ export default function QuizPage() {
           <CardTitle className="text-2xl font-bold text-center">Identify the Bird</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {currentBird && birdDetail && (
-            <>
-              <div className="aspect-video bg-white rounded-lg overflow-hidden relative">
-                <img
-                  src={birdDetail.spectrogram}  
-                  alt="Spectrogram of bird song"
-                  className="w-full h-full object-contain"  
-                />
-                <Button
-                  onClick={() => {
-                    if (isPlaying) {
-                      audioRef.current?.pause(); 
-                    } else {
-                      audioRef.current?.play();  
-                    }
-                    setIsPlaying(!isPlaying);  
-                  }}
-                  variant="outline"
-                  size="icon"
-                  className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-white/80"
-                >
-                  {isPlaying ? (
-                    <PauseCircle className="h-6 w-6" />
-                  ) : (
-                    <PlayCircle className="h-6 w-6" />
-                  )}
-                </Button>
-                <audio ref={audioRef}>
-                  <source src={birdDetail.recording_url} type="audio/mpeg" />
-                  Your browser does not support the audio element.
-                </audio>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {choices.map((bird) => (
-                  <Button
-                    key={bird.bird_id}
-                    variant={selectedAnswer === bird.comName ? "default" : "outline"}
-                    className={`text-lg py-6 ${
-                      selectedAnswer === bird.comName
-                        ? 'bg-green-500 text-white hover:bg-green-500 hover:text-white' // クリック後もホバーで変化しない
-                        : 'hover:bg-gray-200'  // 選択されていない場合のホバースタイル
-                    }`}
-                    onClick={() => handleAnswerSelect(bird.comName)}
-                  >
-                    {bird.comName}
-                  </Button>
-                ))}
-              </div>
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>Question {currentQuestion} of {quizCount}</span>
-              </div>
-              <Progress value={(currentQuestion / quizCount) * 100} className="w-full" />
-            </>
-          )}
+          <div className="aspect-video bg-white rounded-lg overflow-hidden relative">
+            <img
+              src={birdDetail.spectrogram}
+              alt="Spectrogram of bird song"
+              className="w-full h-full object-contain"
+            />
+            <Button
+              onClick={() => {
+                if (isPlaying) {
+                  audioRef.current?.pause();
+                } else {
+                  audioRef.current?.play();
+                }
+                setIsPlaying(!isPlaying);
+              }}
+              variant="outline"
+              size="icon"
+              className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-white/80"
+            >
+              {isPlaying ? (
+                <PauseCircle className="h-6 w-6" />
+              ) : (
+                <PlayCircle className="h-6 w-6" />
+              )}
+            </Button>
+            <audio ref={audioRef}>
+              <source src={birdDetail.recording_url} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+          {choices.map((bird: any) => (
+            <Button
+              key={bird.bird_id}
+              variant={selectedAnswer === bird.comName ? "default" : "outline"}
+              className={`text-lg py-6 ${
+                selectedAnswer === bird.comName
+                  ? 'bg-green-500 text-white hover:bg-green-500 hover:text-white' // 押されたときに緑になる
+                  : 'hover:bg-gray-200'  // 押されていないときのホバースタイル
+              }`}
+              onClick={() => handleAnswerSelect(bird.comName)}
+            >
+              {bird.comName}
+            </Button>
+          ))}
+        </div>
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <span>Question {currentQuestion} of {quizCount}</span>
+          </div>
+          <Progress value={(currentQuestion / quizCount) * 100} className="w-full" />
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button onClick={handleSubmit} disabled={!selectedAnswer} variant="outline">Submit Answer</Button>
+          <Button onClick={handleSubmit} disabled={!selectedAnswer}>Submit Answer</Button>
         </CardFooter>
       </Card>
     </div>
