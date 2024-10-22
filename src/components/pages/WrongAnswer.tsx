@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
-import { Progress } from "../components/ui/progress";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Progress } from "../ui/progress";
 import { XCircle, AlertCircle, ArrowLeft, ArrowRight, PlayCircle, PauseCircle } from "lucide-react";
-import BirdImage from "../components/ui/birdImage";  // 鳥の画像コンポーネント
-import BirdDescription from "../components/ui/birdDescription";  // Wikipediaの鳥の説明コンポーネント
+import BirdImage from "../ui/birdImage";  // 鳥の画像コンポーネント
+import BirdDescription from "../ui/birdDescription";  // Wikipediaの鳥の説明コンポーネント
 
 export default function IncorrectAnswerPage() {
   const location = useLocation();

@@ -2,12 +2,12 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Progress } from "../components/ui/progress"
+import { Button } from "../ui/button"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card"
+import { Progress } from "../ui/progress"
 import { CheckCircle, AlertCircle, PlayCircle, PauseCircle, ArrowLeft, ArrowRight } from "lucide-react"
-import BirdDescription from "../components/ui/birdDescription"
-import BirdImage from "../components/ui/birdImage"
+import BirdDescription from "../ui/birdDescription"
+import BirdImage from "../ui/birdImage"
 
 export default function CorrectAnswerPage() {
   const location = useLocation()

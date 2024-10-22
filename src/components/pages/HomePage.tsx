@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Slider } from "../components/ui/slider";
-import { Label } from "../components/ui/label";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Slider } from "../ui/slider";
+import { Label } from "../ui/label";
 import { Music } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

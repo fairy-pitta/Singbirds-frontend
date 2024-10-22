@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import QuizPage from './pages/QuizPage';
-import CorrectAnswerPage from './pages/CorrectAnswer';
-import IncorrectAnswerPage from './pages/WrongAnswer';
-import ResultPage from './pages/Result';
+import HomePage from '../src/components/pages/HomePage';
+import QuizPage from '../src/components/pages/QuizPage';
+import CorrectAnswerPage from '../src/components/pages/CorrectAnswer';
+import IncorrectAnswerPage from '../src/components/pages/WrongAnswer';
+import ResultPage from '../src/components/pages/Result';
 
 function App() {
     return (

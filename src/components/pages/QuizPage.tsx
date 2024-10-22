@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
-import { Progress } from "../components/ui/progress";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Progress } from "../ui/progress";
 import { PlayCircle, PauseCircle } from "lucide-react";
 
 export default function QuizPage() {
