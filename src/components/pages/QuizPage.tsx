@@ -22,7 +22,7 @@ export default function QuizPage() {
 
   const fetchBirds = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/hotspots/${hotspotId}/birds/`);
+      const response = await fetch(`http://54.66.23.226/api/hotspots/${hotspotId}/birds/`);
       const data = await response.json();
 
       if (!data.birds || data.birds.length === 0) {
@@ -54,7 +54,7 @@ export default function QuizPage() {
       if (!currentBird || !currentBird.bird_id) return;
 
       try {
-        const response = await fetch(`http://localhost:8000/api/birds/${currentBird.bird_id}/random-detail/`);
+        const response = await fetch(`http://54.66.23.226/api/birds/${currentBird.bird_id}/random-detail/`);
         const data = await response.json();
 
         if (!data.bird_detail || !data.bird_detail.recording_url) {

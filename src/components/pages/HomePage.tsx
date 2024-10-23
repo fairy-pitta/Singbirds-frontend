@@ -20,7 +20,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchHotspots = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/hotspots/");
+        const response = await fetch("http://54.66.23.226/api/hotspots/");
         const data = await response.json();
         setHotspots(data); // データを状態に保存
       } catch (error) {
@@ -35,7 +35,7 @@ export default function HomePage() {
     const fetchBirds = async () => {
       if (selectedHotspot) {
         try {
-          const response = await fetch(`http://localhost:8000/api/hotspots/${selectedHotspot.hotspot_id}/birds/`);
+          const response = await fetch(`http://54.66.23.226/api/hotspots/${selectedHotspot.hotspot_id}/birds/`);
           const new_data = await response.json();
   
   
