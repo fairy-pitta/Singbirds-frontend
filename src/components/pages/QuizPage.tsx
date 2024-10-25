@@ -22,7 +22,7 @@ export default function QuizPage() {
 
   const fetchBirds = useCallback(async () => {
     try {
-      const response = await fetch(`https://singbirds.net/api/hotspots/${hotspotId}/birds/`);
+      const response = await fetch(`https://api.singbirds.net/api/hotspots/${hotspotId}/birds/`);
       const data = await response.json();
 
       if (!data.birds || data.birds.length === 0) {
@@ -54,7 +54,7 @@ export default function QuizPage() {
       if (!currentBird || !currentBird.bird_id) return;
 
       try {
-        const response = await fetch(`https://singbirds.net/api/birds/${currentBird.bird_id}/random-detail/`);
+        const response = await fetch(`https:/api.singbirds.net/api/birds/${currentBird.bird_id}/random-detail/`);
         const data = await response.json();
 
         if (!data.bird_detail || !data.bird_detail.recording_url) {
@@ -69,7 +69,7 @@ export default function QuizPage() {
         }
 
         const spectrogramUrl = data.bird_detail.spectrogram.startsWith('/')
-          ? `http://localhost:8000${data.bird_detail.spectrogram}`
+          ? `https://api.singbirds.net${data.bird_detail.spectrogram}`
           : data.bird_detail.spectrogram;
 
         if (isMounted) {
