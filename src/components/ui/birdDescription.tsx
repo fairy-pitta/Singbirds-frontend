@@ -51,9 +51,16 @@ const BirdDescription: React.FC<BirdDescriptionProps> = ({ birdName, setSourceUr
   }, [birdName, setSourceUrl]);
 
   return (
-    <div>
+    <div
+      style={{
+        maxHeight: '300px',  // 固定の高さ
+        overflowY: 'auto',   // コンテンツが溢れた場合にスクロール
+        border: '1px solid #ddd',
+        padding: '10px',
+        borderRadius: '5px'
+      }}
+    >
       {description ? (
-        // HTMLをレンダリング
         <div dangerouslySetInnerHTML={{ __html: description }} />
       ) : (
         <p>Loading description...</p>
