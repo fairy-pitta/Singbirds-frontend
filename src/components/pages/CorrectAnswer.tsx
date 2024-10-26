@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { Button } from "../ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { Progress } from "../ui/progress"
-import { CheckCircle, AlertCircle, PlayCircle, PauseCircle, ArrowLeft, ArrowRight } from "lucide-react"
+import { CheckCircle, Info, PlayCircle, PauseCircle, ArrowLeft, ArrowRight } from "lucide-react"
 import BirdDescription from "../ui/birdDescription"
 import BirdImage from "../ui/birdImage"
 
@@ -122,7 +122,7 @@ export default function CorrectAnswerPage() {
         <CardFooter className="flex justify-between items-center p-4">
           {sourceUrl && (
             <Button
-              variant="outline"
+              variant="ghost"
               className="flex items-center"
               asChild
             >
@@ -132,7 +132,7 @@ export default function CorrectAnswerPage() {
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:text-blue-700"
               >
-                <AlertCircle className="w-5 h-5" />
+                <Info className="w-5 h-5" />
               </a>
             </Button>
           )}

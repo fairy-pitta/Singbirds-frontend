@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
-import { XCircle, AlertCircle, ArrowLeft, ArrowRight, PlayCircle, PauseCircle } from "lucide-react";
+import { XCircle, Info, ArrowLeft, ArrowRight, PlayCircle, PauseCircle } from "lucide-react";
 import BirdImage from "../ui/birdImage";  // 鳥の画像コンポーネント
 import BirdDescription from "../ui/birdDescription";  // Wikipediaの鳥の説明コンポーネント
 
@@ -130,7 +130,7 @@ export default function IncorrectAnswerPage() {
         <CardFooter className="flex justify-between items-center p-4">
           {sourceUrl && (
             <Button
-              variant="outline"
+              variant="ghost"
               className="flex items-center"
               asChild
             >
@@ -140,7 +140,7 @@ export default function IncorrectAnswerPage() {
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:text-blue-700"
               >
-                <AlertCircle className="w-5 h-5" />
+                <Info className="w-5 h-5" />
               </a>
             </Button>
           )}
