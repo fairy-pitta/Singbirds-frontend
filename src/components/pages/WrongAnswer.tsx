@@ -127,45 +127,31 @@ export default function IncorrectAnswerPage() {
           </div>
           <Progress value={(currentQuestion / quizCount) * 100} className="w-full" />
         </CardContent>
-        <CardFooter className="flex flex-col md:flex-row md:justify-between items-center md:space-x-2 space-y-2 md:space-y-0 p-4">
+        <CardFooter className="flex justify-between items-center p-4">
           {sourceUrl && (
             <Button
               variant="outline"
-              className="flex items-center space-x-2 flex-1"
+              className="flex items-center"
               asChild
             >
               <a
                 href={sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center space-x-2 text-blue-500 hover:text-blue-700"
+                className="text-blue-500 hover:text-blue-700"
               >
-                <AlertCircle className="w-4 h-4" />
-                <span>More</span>
+                <AlertCircle className="w-5 h-5" />
               </a>
             </Button>
           )}
-          <div className="flex flex-col md:flex-row items-center md:space-x-2 space-y-2 md:space-y-0 flex-1">
-            <Button
-              onClick={handlePlayPause}
-              variant="outline"
-              className="flex items-center flex-1"
-            >
-              {isPlaying ? (
-                <PauseCircle className="w-4 h-4 mr-2" />
-              ) : (
-                <PlayCircle className="w-4 h-4 mr-2" />
-              )}
-              Listen
-            </Button>
-            <Button
-              onClick={handleNextQuestion}
-              variant="outline"
-              className="flex-1 bg-blue-500 text-white hover:bg-blue-600"
-            >
-              Next
-            </Button>
-          </div>
+          <div className="flex-grow"></div> {/* 空白を確保してNextボタンを右寄せ */}
+          <Button
+            onClick={handleNextQuestion}
+            variant="outline"
+            className="bg-blue-500 text-white hover:bg-blue-600"
+          >
+            Next
+          </Button>
         </CardFooter>
       </Card>
     </div>
