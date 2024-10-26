@@ -124,7 +124,7 @@ export default function CorrectAnswerPage() {
             {sourceUrl ? (
               <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4" />
-                <span>Learn More</span>
+                <span>More</span>
               </a>
             ) : (
               <span>No source available</span>
@@ -132,9 +132,9 @@ export default function CorrectAnswerPage() {
           </Button>
           <Button onClick={handlePlayPause} variant="outline" className="flex items-center">
             {isPlaying ? <PauseCircle className="w-4 h-4 mr-2" /> : <PlayCircle className="w-4 h-4 mr-2" />}
-            Listen Again
+            Listen
           </Button>
-          <Button onClick={handleNextQuestion} variant="outline">Next Question</Button>
+          <Button onClick={handleNextQuestion} variant="outline">Next</Button>
         </CardFooter>
       </Card>
     </div>
