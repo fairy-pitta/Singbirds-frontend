@@ -55,7 +55,6 @@ const BirdDescription: React.FC<BirdDescriptionProps> = ({ birdName, setSourceUr
       style={{
         maxHeight: '300px',  // 固定の高さ
         overflowY: 'auto',   // コンテンツが溢れた場合にスクロール
-        border: '1px solid #ddd',
         padding: '10px',
         borderRadius: '5px'
       }}

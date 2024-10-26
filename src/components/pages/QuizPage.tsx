@@ -209,7 +209,7 @@ export default function QuizPage() {
             <Button
               key={bird.bird_id}
               variant={selectedAnswer === bird.comName ? "default" : "outline"}
-              className={`text-lg py-6 ${
+              className={`text-base py-6 ${
                 selectedAnswer === bird.comName
                   ? 'bg-green-500 text-white hover:bg-green-500 hover:text-white' // 押されたときに緑になる
                   : 'hover:bg-gray-200'  // 押されていないときのホバースタイル
