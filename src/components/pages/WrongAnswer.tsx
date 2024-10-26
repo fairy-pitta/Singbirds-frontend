@@ -127,11 +127,11 @@ export default function IncorrectAnswerPage() {
           </div>
           <Progress value={(currentQuestion / quizCount) * 100} className="w-full" />
         </CardContent>
-        <CardFooter className="flex justify-between items-center space-x-4 p-4">
+        <CardFooter className="flex flex-col md:flex-row md:justify-between items-center md:space-x-2 space-y-2 md:space-y-0 p-4">
           {sourceUrl && (
             <Button
               variant="outline"
-              className="flex items-center space-x-2 w-32"
+              className="flex items-center space-x-2 flex-1"
               asChild
             >
               <a
@@ -145,11 +145,11 @@ export default function IncorrectAnswerPage() {
               </a>
             </Button>
           )}
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col md:flex-row items-center md:space-x-2 space-y-2 md:space-y-0 flex-1">
             <Button
               onClick={handlePlayPause}
               variant="outline"
-              className="flex items-center w-32"
+              className="flex items-center flex-1"
             >
               {isPlaying ? (
                 <PauseCircle className="w-4 h-4 mr-2" />
@@ -161,7 +161,7 @@ export default function IncorrectAnswerPage() {
             <Button
               onClick={handleNextQuestion}
               variant="outline"
-              className="w-32 bg-blue-500 text-white hover:bg-blue-600"
+              className="flex-1 bg-blue-500 text-white hover:bg-blue-600"
             >
               Next
             </Button>
