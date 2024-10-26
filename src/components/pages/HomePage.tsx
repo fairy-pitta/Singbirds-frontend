@@ -73,7 +73,7 @@ export default function HomePage() {
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="text-4xl font-bold text-center flex items-center justify-center">
-            <Music className="w-8 h-8 mr-2" />
+            <img src="/favicon.ico" alt="Logo" className="w-8 h-8 mr-2" />
             SingBirds
           </CardTitle>
         </CardHeader>
