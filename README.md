@@ -19,7 +19,7 @@ The backend handles:
 
 ⸻
 
-Thank you for visiting this project! Feel free to contact me at [my website](https:/singbirds.net), and enjoy learning about the amazing birds of Singapore! 🐦✨
+Thank you for visiting this project! Feel free to contact me at [my website](https://singbirds.net), and enjoy learning about the amazing birds of Singapore! 🐦✨
 
 ⸻
 
